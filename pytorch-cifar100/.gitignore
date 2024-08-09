@@ -1,0 +1,8 @@
+**/__pycache__
+data
+checkpoint
+runs
+/backup
+/figures
+/params
+/results

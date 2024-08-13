@@ -9,7 +9,13 @@ parser.add_argument('--source-dir', '-s', type=str, required=True,
                     help='source directory')
 parser.add_argument('--target-dir', '-t', type=str, required=True,
                     help='target directory')
+parser.add_argument('--hours', '-hr', type=int, default=24,
+                    help='filter directories created hours before')
+parser.add_argument('--keep', '-k', action='store_true',
+                    default=False, help='keep sources after archive')
 args = parser.parse_args()
+
+assert args.hours >= 1, 'Invalid hours'
 
 assert os.path.isdir(args.source_dir) and os.path.isdir(args.target_dir), \
     'Invalid directories'
@@ -31,14 +37,19 @@ for d in os.listdir(args.source_dir):
     path = os.path.join(args.source_dir, d)
     mtime = os.path.getmtime(path)
     delta = time_now.timestamp() - mtime
-    if delta > 60 * 60:
+    if delta > 60 * 60 * args.hours:
         filtered_paths.append(path)
         print(datetime.fromtimestamp(mtime).strftime('[%Y/%m/%d %H:%M]'), path)
 
 print(f'Target: {archive_path}')
 
-if input('Continue? y/[n]') == 'y':
+if input(f'{'Keep' if args.keep else 'Delete'} sources, Continue? y/[n]') == 'y':
     subprocess.run(['tar', '-cvf', archive_path, *filtered_paths])
+    print('Archived.')
+    if not args.keep:
+        for p in filtered_paths:
+            print(f'Delete {p}')
+            subprocess.run(['rm', '-r', p])
     print('Done.')
 else:
     print('Stopped.')

@@ -147,6 +147,8 @@ def eval_training(epoch=0, tb=True):
 
 if __name__ == '__main__':
     net = get_network(args)
+    if args.gpu is not None:
+        net = net.cuda(args.gpu)
 
     # data preprocessing:
     cifar100_training_loader = get_training_dataloader(

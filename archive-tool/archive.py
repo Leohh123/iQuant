@@ -43,7 +43,7 @@ for d in os.listdir(args.source_dir):
 
 print(f'Target: {archive_path}')
 
-if input(f'{'Keep' if args.keep else 'Delete'} sources, Continue? y/[n]') == 'y':
+if input(f'{'Keep' if args.keep else 'Delete'} sources, Continue? y/[n]: ') == 'y':
     subprocess.run(['tar', '-cvf', archive_path, *filtered_paths])
     print('Archived.')
     if not args.keep:
